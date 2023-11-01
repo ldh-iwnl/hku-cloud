@@ -1,0 +1,63 @@
+server:
+  port: 60
+
+#spring:
+#  application:
+#    ###服务的名称
+#    name: kyle-main
+#  datasource:
+#    password: root
+#    username: root
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/10?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+
+logging:
+  level:
+    ###打印mybatis日志
+    com.mayikt.main.mapper: debug
+
+# 数据源 mayiktdb
+sharding:
+  jdbc:
+    datasource:
+      names: sysadmin
+      # 第一个数据库
+      sysadmin:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://127.0.0.1:3306/10?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+    # 水平拆分的数据库（表） 配置分库 + 分表策略 行表达式分片策略
+    config:
+      sharding:
+        tables:
+          sys_user: ##虚拟表名称  mayikt_user_0 mayikt_user_1
+            actual-data-nodes: sysadmin.sys_user_$->{1..2}  # 没有带上 分片字段
+            table-strategy:
+              standard: ##SELECT * FROM  mayikt_user_1 where id =1
+                precise-algorithm-class-name: hk.hku.main.config.MayiktRangeShardingAlgorithm
+                sharding-column: id
+      # 打印执行的数据库
+      props:
+        sql:
+          show: true
+
+
+# 打印执行的sql语句
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    host: 192.168.150.111
+    port: 6379
+    password: 961025
+    database: 3
+
+hkuthreadpool:
+  userName: hkuthreadpool
+  thread:
+    corePoolSize: 2
+    maxPoolSize: 2
+    queueCapacity: 20
+    keepAlive: 60
