@@ -57,7 +57,22 @@ spring:
 hkuthreadpool:
   userName: hkuthreadpool
   thread:
-    corePoolSize: 2
-    maxPoolSize: 2
-    queueCapacity: 20
-    keepAlive: 60
+    corePoolSize: 32
+    maxPoolSize: 32
+    queueCapacity: 1000  # 最大线程数---生效  32-20
+    keepAlive: 60 # 如果线程60s 没有任何执行任务的话 直接死亡避免 浪费cpu资源
+  log:
+    threads: 3
+    threadName: hkuthreadpool-log
+  wx:
+    main:
+      login:
+        templateId: RZ_sW_qfxrF9x9Xvc_SkoXjeJGKLLKDHt7iPVXI3srI
+
+wx:
+  mp:
+    configs:
+      -   appId: wxff192df558f221d1
+          secret: 7b44b34e80bb6849b7d28f496f3f9d49
+          token: kyleli
+

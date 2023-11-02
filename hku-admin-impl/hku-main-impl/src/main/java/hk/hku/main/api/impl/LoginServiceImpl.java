@@ -13,7 +13,9 @@ import hk.hku.main.api.LoginService;
 import hk.hku.main.api.dto.req.LoginUserReqDto;
 import hk.hku.main.api.impl.entity.SysUser;
 import hk.hku.main.api.impl.entity.SysUserLoginLog;
-import hk.hku.main.api.impl.manage.LoginLogManage;
+import hk.hku.main.container.AsyncLogWrapper;
+import hk.hku.main.container.HkuLogContainer;
+import hk.hku.main.manage.LoginLogManage;
 import hk.hku.main.api.impl.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,11 @@ public class LoginServiceImpl extends BaseApiService implements LoginService {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+//    @Autowired
+//    private LoginLogManage loginLogManage;
+
     @Autowired
-    private LoginLogManage loginLogManage;
+    private HkuLogContainer hkuLogContainer;
 
     @Override
     public BaseResponse<JSONObject> login(LoginUserReqDto loginUserReqDto) {
@@ -68,7 +73,11 @@ public class LoginServiceImpl extends BaseApiService implements LoginService {
         jsonObject.put("token", token);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         SysUserLoginLog sysUserLoginLog = new SysUserLoginLog(sysUser.getId(), IpUtil.getIp(request), new Date(), token, loginUserReqDto.getChannel(), loginUserReqDto.getEquipment());
-        loginLogManage.asyncLoginLog(sysUserLoginLog);
+//        loginLogManage.asyncLoginLog(sysUserLoginLog);
+        // use async to log the login info
+        AsyncLogWrapper asyncLogWrapper = new AsyncLogWrapper(sysUserLoginLog, sysUser);
+        // send a entry log into the queue
+        hkuLogContainer.addLog(asyncLogWrapper);
         return setResultSuccessData(jsonObject);
     }
 }
