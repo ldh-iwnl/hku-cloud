@@ -72,7 +72,7 @@ hkuthreadpool:
 wx:
   mp:
     configs:
-      -   appId: wxff192df558f221d1
-          secret: 7b44b34e80bb6849b7d28f496f3f9d49
+      -   appId: WeChat App Id
+          secret: Wechat Secret Key
           token: kyleli
 
